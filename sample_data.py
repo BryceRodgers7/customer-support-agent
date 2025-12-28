@@ -60,3 +60,42 @@ SUPPORT_GUIDANCE = {
         ]
     },
 }
+
+SHIPPING_RATES = [
+    {"method": "Standard", "min_days": 3, "max_days": 7, "base_usd": 5.99},
+    {"method": "Expedited", "min_days": 2, "max_days": 3, "base_usd": 12.99},
+    {"method": "Overnight", "min_days": 1, "max_days": 1, "base_usd": 24.99},
+]
+
+PROMO_CODES = {
+    "WELCOME10": {"percent_off": 10, "active": True},
+    "FREESHIP": {"free_shipping": True, "active": True},
+    "EXPIRED5": {"percent_off": 5, "active": False},
+}
+
+# Example: minimal KB articles
+KB_ARTICLES = [
+    {
+        "id": "kb_autofocus",
+        "title": "Camera autofocus troubleshooting",
+        "tags": ["camera", "autofocus", "streamcam", "usb"],
+        "content": "Try cleaning the lens, improving lighting, using a powered USB port, updating firmware/drivers, and testing on another device.",
+    },
+    {
+        "id": "kb_bluetooth",
+        "title": "Bluetooth pairing tips",
+        "tags": ["bluetooth", "headphones", "pairing"],
+        "content": "Reset pairing mode, forget the device on your phone, restart Bluetooth, and ensure no other device is connecting first.",
+    },
+]
+
+# Optional: pretend we track inventory per warehouse
+WAREHOUSES = [
+    {"id": "CHI-1", "city": "Chicago", "state": "IL"},
+    {"id": "DAL-1", "city": "Dallas", "state": "TX"},
+]
+
+INVENTORY_BY_WAREHOUSE = {
+    "CHI-1": {"HDPH-001": 20, "KBMX-002": 0, "CAM4K-003": 3},
+    "DAL-1": {"HDPH-001": 22, "KBMX-002": 0, "CAM4K-003": 5},
+}

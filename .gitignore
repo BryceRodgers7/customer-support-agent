@@ -1,3 +1,6 @@
 .env
 tickets.sqlite3
 *.db
+# Python bytecode
+__pycache__/
+*.py[cod]
