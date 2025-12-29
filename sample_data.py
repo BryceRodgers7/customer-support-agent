@@ -12,6 +12,33 @@ PRODUCTS = [
         "category": "audio",
     },
     {
+        "sku": "HDPH-002",
+        "name": "Auraluxe Wireless Headphones 2",
+        "price_usd": 159.99,
+        "stock": 22,
+        "key_features": ["Bluetooth 5.3", "ANC", "32h battery", "Noise-cancelling"],
+        "warranty_months": 12,
+        "category": "audio",
+    },
+    {
+        "sku": "MONLCD-001",
+        "name": "Lightbend 4K Monitor",
+        "price_usd": 599.99,
+        "stock": 5,
+        "key_features": ["4K", "32-inch", "IPS", "144Hz", "HDR", "G-Sync", "FreeSync"],
+        "warranty_months": 24,
+        "category": "monitor",
+    },
+    {
+        "sku": "MONLCD-002",
+        "name": "Lightbend 4K Monitor 35",
+        "price_usd": 899.99,
+        "stock": 3,
+        "key_features": ["4K", "35-inch", "IPS", "144Hz", "HDR", "G-Sync", "FreeSync", "QHD"],
+        "warranty_months": 24,
+        "category": "monitor",
+    },
+    {
         "sku": "KBMX-002",
         "name": "MechaPro Keyboard (MX Brown)",
         "price_usd": 99.00,
@@ -96,6 +123,6 @@ WAREHOUSES = [
 ]
 
 INVENTORY_BY_WAREHOUSE = {
-    "CHI-1": {"HDPH-001": 20, "KBMX-002": 0, "CAM4K-003": 3},
-    "DAL-1": {"HDPH-001": 22, "KBMX-002": 0, "CAM4K-003": 5},
+    "CHI-1": {"HDPH-001": 20, "HDPH-002": 22, "MONLCD-001": 5, "MONLCD-002": 3, "KBMX-002": 0, "CAM4K-003": 3},
+    "DAL-1": {"HDPH-001": 22, "HDPH-002": 24, "MONLCD-001": 6, "MONLCD-002": 4, "KBMX-002": 0, "CAM4K-003": 6},
 }
