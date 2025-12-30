@@ -1,0 +1,186 @@
+Below is internal-facing customer support documentation for the fictional high-end electronics company Protis. This is written in a realistic, operational tone—meant for onboarding support agents, training LLM-powered bots, or serving as a base knowledge source for a RAG system.
+
+Protis – Customer Support Knowledge Base
+Version: 1.0
+Audience: Customer Support Agents, Support Engineering, AI Support Systems
+Last Updated: 2025-01-01
+
+Company Overview
+Protis designs and manufactures premium consumer electronics focused on audio fidelity, visual accuracy, and professional-grade build quality. Products are positioned for enthusiasts, creatives, and professionals. Customers generally expect white-glove support and fast resolution.
+
+PRODUCT CATALOG
+
+1. Protis Aether X1 – Wireless Headphones
+Category: Audio / Headphones
+Price: $399
+Product Overview
+The Aether X1 are flagship wireless over-ear headphones featuring adaptive ANC, spatial audio, and studio-tuned drivers.
+Service Plan Options
+Standard Warranty: 1 year
+Protis Care+ ($59/year):
+Accidental damage coverage
+Battery replacement after 24 months
+Priority support queue
+Setup Guide
+Charge headphones fully (USB-C).
+Hold power button for 3 seconds.
+Open Bluetooth settings on device.
+Select “Protis Aether X1”.
+Install Protis Control App for firmware updates.
+FAQs
+Q: Can I use them wired?
+A: Yes, via included 3.5mm cable (ANC disabled in wired mode).
+Q: Do they support multipoint Bluetooth?
+A: Yes, up to two devices.
+Q: Are they water resistant?
+A: No, not rated for water exposure.
+Troubleshooting
+No sound after pairing:
+Reset headphones (hold power + volume down for 10s).
+ANC not working:
+Ensure firmware is updated via the app.
+Known Limitations
+ANC disabled in wired mode
+Not designed for workouts or moisture exposure
+
+2. Protis Helios Pro – Mirrorless Camera
+Category: Imaging / Camera
+Price: $2,199 (body only)
+Product Overview
+Professional-grade mirrorless camera with a 45MP full-frame sensor and 8K video support.
+Service Plan Options
+Standard Warranty: 1 year
+Protis Care+ ($249/year):
+Sensor cleaning
+Loaner camera during repairs
+Express replacement
+Setup Guide
+Insert charged battery and SD/CFexpress card.
+Attach lens.
+Power on camera.
+Complete first-time setup wizard.
+Update firmware via SD card.
+FAQs
+Q: Does it support third-party lenses?
+A: Yes, with supported mounts.
+Q: Is overheating common in 8K mode?
+A: Extended 8K recording may trigger thermal limits.
+Q: Can it livestream?
+A: Yes, via USB-C.
+Troubleshooting
+Camera won’t power on:
+Check battery orientation and charge.
+Video stops recording:
+Device may have reached thermal threshold.
+Known Limitations
+8K video limited to 20-minute clips
+No built-in flash
+
+3. Protis Lumina 32 – 4K Monitor
+Category: Displays
+Price: $899
+Product Overview
+Color-accurate 32” 4K IPS monitor designed for creators.
+Service Plan Options
+Standard Warranty: 2 years
+Protis Care+ ($79/year):
+Pixel-perfect replacement
+Advance replacement shipping
+Setup Guide
+Connect power and display cable.
+Select input source.
+Calibrate using included profile (optional).
+Adjust stand height/tilt.
+FAQs
+Q: Does it support HDR?
+A: HDR10 supported (600 nits peak).
+Q: VESA mount compatible?
+A: Yes, 100×100.
+Q: Built-in speakers?
+A: No.
+Troubleshooting
+No signal:
+Confirm correct input source.
+Color banding:
+Disable OS-level color enhancements.
+Known Limitations
+No HDMI 2.1
+No internal speakers
+
+4. Protis Lumina 27 Edge – Gaming Monitor
+Price: $699
+144Hz, QHD, low-latency IPS panel.
+(Structure abbreviated for brevity—same sections apply)
+Known Limitations: No USB-C power delivery
+
+5. Protis Orion Mechanical Keyboard
+Category: Input Devices
+Price: $249
+Product Overview
+CNC-milled aluminum mechanical keyboard with hot-swappable switches.
+Service Plans
+Standard: 1 year
+Care+: $39/year
+Known Limitations
+No wireless mode
+Not spill-resistant
+
+6. Protis Orion Mini (60%)
+Price: $199
+Compact version of Orion.
+Known Limitations: No dedicated arrow keys
+
+7. Protis Nova Studio Speakers
+Category: Audio / Speakers
+Price: $1,299 (pair)
+Known Limitations
+Requires external DAC for best performance
+
+8. Protis Nova Air (Wireless Speakers)
+Price: $699
+Smart wireless speakers with room calibration.
+Known Limitations: Latency unsuitable for video editing
+
+9. Protis Pulse ANC Earbuds
+Category: Audio
+Price: $249
+Known Limitations
+Battery degrades after ~500 cycles
+
+10. Protis Arc Webcam Pro
+Category: Accessories
+Price: $199
+4K webcam for professional streaming.
+Known Limitations
+No onboard storage
+
+REFUND POLICY
+Standard Return Window
+30 days from delivery
+Product must be in original condition
+Accessories and packaging required
+Non-Returnable Items
+Digital software licenses
+Personalized or engraved products
+Refund Processing
+Refunds issued to original payment method
+5–7 business days after inspection
+
+WARRANTY POLICY
+Standard Warranty
+Covers manufacturing defects
+Does not cover accidental damage, misuse, or cosmetic wear
+Protis Care+
+Extends coverage
+Includes accidental damage
+Priority replacement and support
+Warranty Claim Process
+Verify serial number
+Confirm purchase date
+Run basic diagnostics
+Escalate to RMA if required
+
+SUPPORT ESCALATION GUIDELINES
+Tier 1: Setup, FAQs, basic troubleshooting
+Tier 2: Firmware, hardware diagnostics
+Tier 3: Engineering / Product Team
