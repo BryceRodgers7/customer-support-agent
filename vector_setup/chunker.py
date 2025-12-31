@@ -39,15 +39,18 @@ def package_chunks(chunks):
                 "chunk_index": idx,
             }
         )
+
+    return packaged_chunks
     
-    # sanity check
-    print(f"Total chunks: {len(packaged_chunks)}\n")
-    print(packaged_chunks[0]["text"][:500])
 
 
 raw_chunks = chunk_text(
-    open("knowledge_base.txt", "r").read(),
+    open("knowledge_base.txt", "r", encoding="utf-8").read(),
     chunk_size=1000,
     overlap=200,
 )
 package_chunks(raw_chunks)
+
+# sanity check
+print(f"Total chunks: {len(packaged_chunks)}\n")
+print(packaged_chunks[0]["text"][:500])

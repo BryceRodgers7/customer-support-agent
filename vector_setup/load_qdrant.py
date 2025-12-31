@@ -45,3 +45,13 @@ for c, v in zip(chunks, vectors_iter):
 
 client.upsert(collection_name=COLLECTION, points=points)
 print("Inserted:", len(points))
+
+# Write all points to points.txt for verification
+with open("points.txt", "w", encoding="utf-8") as f:
+    for point in points:
+        f.write(f"{point.id}\n")
+        f.write(f"{point.vector}\n")
+        f.write(f"{point.payload['text']}\n")
+        f.write("\n")
+
+print("Created points.txt with all point data")
