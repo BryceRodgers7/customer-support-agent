@@ -2,5 +2,6 @@
 tickets.sqlite3
 *.db
 # Python bytecode
-__pycache__/
+**/__pycache__/
 *.py[cod]
+points.txt

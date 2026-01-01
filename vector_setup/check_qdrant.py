@@ -43,12 +43,15 @@ print("-" * 80)
 # Embed the query
 query_vector = next(embedder.embed([search_query]))
 
+# Convert numpy array to list of floats
+query_vector_list = [float(x) for x in query_vector]
+
 # Search for similar points
-search_results = client.search(
+search_results = client.query_points(
     collection_name=COLLECTION,
-    query_vector=list(query_vector),
+    query=query_vector_list,
     limit=5  # Return top 5 results
-)
+).points
 
 print(f"\nFound {len(search_results)} results:\n")
 
