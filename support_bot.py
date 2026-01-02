@@ -14,6 +14,7 @@ import time
 from openai import OpenAI
 
 from sample_data import PRODUCTS, ORDERS, RETURN_POLICY, SUPPORT_GUIDANCE, SHIPPING_RATES, PROMO_CODES, KB_ARTICLES, WAREHOUSES, INVENTORY_BY_WAREHOUSE
+from rag_search import search_kb_rag
 
 DB_PATH = "tickets.sqlite3"
 
@@ -221,24 +222,11 @@ def create_return_request(order_id: str, sku: str, reason: str, email: Optional[
     return {"rma_id": rma_id, "status": "requested", "order_id": order_id.upper(), "sku": sku.upper()}
 
 def search_kb(query: str, max_results: int = 3) -> Dict[str, Any]:
-    q = query.lower().strip()
-    tokens = [t for t in re.split(r"\W+", q) if t]
-
-    scored = []
-    for a in KB_ARTICLES:
-        hay = f"{a['id']} {a['title']} {' '.join(a.get('tags', []))} {a['content']}".lower()
-        score = sum(1 for t in tokens if t in hay)
-        scored.append((score, a))
-
-    scored.sort(key=lambda x: x[0], reverse=True)
-    results = [a for s, a in scored if s > 0][: max(1, max_results)]
-    # return only summaries to keep tool output small
-    return {
-        "results": [
-            {"id": a["id"], "title": a["title"], "tags": a.get("tags", []), "snippet": a["content"][:200]}
-            for a in results
-        ]
-    }
+    """
+    Search the knowledge base using RAG (vector database).
+    This now uses semantic search via Qdrant instead of simple keyword matching.
+    """
+    return search_kb_rag(query, max_results)
 
 def get_troubleshooting_steps(issue: str) -> Dict[str, Any]:
     issue_norm = issue.strip().lower()
@@ -462,12 +450,12 @@ TOOLS_SCHEMA = [
         "type": "function",
         "function": {
             "name": "search_kb",
-            "description": "Search internal knowledge base articles by keyword/tags and return brief summaries.",
+            "description": "Search internal knowledge base using semantic search (RAG). Returns relevant documentation chunks from the company's support knowledge base with relevance scores.",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "query": {"type": "string"},
-                    "max_results": {"type": "integer", "minimum": 1, "maximum": 10},
+                    "query": {"type": "string", "description": "The search query - can be a question, topic, or keywords"},
+                    "max_results": {"type": "integer", "minimum": 1, "maximum": 10, "description": "Maximum number of results to return"},
                 },
                 "required": ["query"],
             },
@@ -510,6 +498,91 @@ TOOLS_SCHEMA = [
         },
     },
 ]
+
+
+# ----------------------------
+# Tool Execution & Routing
+# ----------------------------
+
+def execute_tool_call(tool_call, tool_funcs: Dict[str, Any]) -> tuple[str, Dict[str, Any], int]:
+    """
+    Execute a single tool call and return the result with timing information.
+    
+    Args:
+        tool_call: The tool call object from OpenAI API
+        tool_funcs: Dictionary mapping tool names to their functions
+    
+    Returns:
+        Tuple of (tool_name, result_dict, elapsed_ms)
+    """
+    name = tool_call.function.name
+    try:
+        args = json.loads(tool_call.function.arguments)
+    except json.JSONDecodeError:
+        args = {}
+    
+    fn = tool_funcs.get(name)
+    
+    start = time.time()
+    logger.info("TOOL CALL -> %s args=%s", name, args)
+    
+    if not fn:
+        result = {"error": f"Unknown tool: {name}"}
+    else:
+        try:
+            result = fn(**args)
+        except TypeError as e:
+            result = {"error": f"Bad arguments for {name}: {str(e)}"}
+        except Exception as e:
+            result = {"error": f"Tool {name} failed: {str(e)}"}
+    
+    elapsed_ms = int((time.time() - start) * 1000)
+    preview = str(result)
+    if len(preview) > 500:
+        preview = preview[:500] + "...(truncated)"
+    logger.info("TOOL RESULT <- %s (%d ms) result=%s", name, elapsed_ms, preview)
+    
+    return name, result, elapsed_ms
+
+
+def route_with_llm(
+    client: OpenAI,
+    model: str,
+    messages: List[Dict[str, Any]],
+    tools_schema: List[Dict[str, Any]]
+) -> Any:
+    """
+    LLM Router: Uses the language model to decide which tool(s) to call.
+    
+    This function encapsulates the routing logic where the LLM analyzes
+    the conversation and determines which tools are needed to respond.
+    
+    Args:
+        client: OpenAI client instance
+        model: Model name to use
+        messages: Conversation history
+        tools_schema: Available tools schema
+    
+    Returns:
+        The API response containing the LLM's decision on tool usage
+    """
+    logger.info("LLM Router: Analyzing request and determining tool usage...")
+    
+    resp = client.chat.completions.create(
+        model=model,
+        messages=messages,
+        tools=tools_schema,
+    )
+    
+    message = resp.choices[0].message
+    
+    if message.tool_calls:
+        tool_names = [tc.function.name for tc in message.tool_calls]
+        logger.info(f"LLM Router: Selected tools: {tool_names}")
+    else:
+        logger.info("LLM Router: No tools needed, generating direct response")
+    
+    return resp
 
 
 # ----------------------------
@@ -563,10 +636,12 @@ class CustomerSupportBot:
         while iteration < max_iterations:
             iteration += 1
             
-            resp = self.client.chat.completions.create(
+            # Use LLM router to determine which tools to call (if any)
+            resp = route_with_llm(
+                client=self.client,
                 model=self.model,
                 messages=self.messages,
-                tools=TOOLS_SCHEMA,
+                tools_schema=TOOLS_SCHEMA
             )
 
             message = resp.choices[0].message
@@ -582,35 +657,10 @@ class CustomerSupportBot:
             if not message.tool_calls:
                 return message.content or ""
 
-            # Process tool calls
+            # Process each tool call using the executor
             for tool_call in message.tool_calls:
-                name = tool_call.function.name
-                try:
-                    args = json.loads(tool_call.function.arguments)
-                except json.JSONDecodeError:
-                    args = {}
+                name, result, elapsed_ms = execute_tool_call(tool_call, TOOL_FUNCS)
                 
-                fn = TOOL_FUNCS.get(name)
-
-                start = time.time()
-                logger.info("TOOL CALL -> %s args=%s", name, args)
-
-                if not fn:
-                    result = {"error": f"Unknown tool: {name}"}
-                else:
-                    try:
-                        result = fn(**args)
-                    except TypeError as e:
-                        result = {"error": f"Bad arguments for {name}: {str(e)}"}
-                    except Exception as e:
-                        result = {"error": f"Tool {name} failed: {str(e)}"}
-                    
-                elapsed_ms = int((time.time() - start) * 1000)
-                preview = str(result)
-                if len(preview) > 500:
-                    preview = preview[:500] + "...(truncated)"
-                logger.info("TOOL RESULT <- %s (%d ms) result=%s", name, elapsed_ms, preview)
-
                 # Add tool result to messages
                 self.messages.append({
                     "role": "tool",
