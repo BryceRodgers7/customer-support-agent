@@ -62,6 +62,7 @@ def search_kb_rag(query: str, max_results: int = 3) -> Dict[str, Any]:
         - count: Number of results returned
     """
     try:
+        logger.info(f"Searching vector database for query: {query}")
         # Initialize on first use
         _initialize_rag()
         
