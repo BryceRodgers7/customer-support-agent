@@ -7,29 +7,50 @@ from typing import Dict, Any, List, Optional
 from qdrant_client import QdrantClient
 from fastembed import TextEmbedding
 import logging
+import os
 
 logger = logging.getLogger("support_bot")
+
+# Load secrets from secrets.toml file if environment variables are not set
+if not os.getenv("QDRANT_API_KEY") or not os.getenv("QDRANT_URL"):
+    try:
+        import tomllib  # Python 3.11+
+    except ImportError:
+        import tomli as tomllib  # For Python < 3.11, install via: pip install tomli
+
+    secrets_path = os.path.join(os.path.dirname(__file__), "..", "secrets.toml")
+    with open(secrets_path, "rb") as f:
+        secrets = tomllib.load(f)
+        # Set as environment variables
+        for key, value in secrets.items():
+            os.environ[key] = value
+
+if not os.getenv("QDRANT_API_KEY"):
+    raise RuntimeError("Missing QDRANT_API_KEY env var")
+if not os.getenv("QDRANT_URL"):
+    raise RuntimeError("Missing QDRANT_URL env var")
+
+print(f"QDRANT_URL: {os.getenv('QDRANT_URL')}")
 
 # Initialize client and embedder
 # These will be initialized once when the module is imported
 _client: Optional[QdrantClient] = None
 _embedder: Optional[TextEmbedding] = None
 COLLECTION = "support_kb"
-QDRANT_URL = "http://localhost:6333"
 
-
+# Initialize the client and embedder
 def _initialize_rag():
     """Lazy initialization of Qdrant client and embedder."""
     global _client, _embedder
     
     if _client is None:
         try:
-            _client = QdrantClient(url=QDRANT_URL)
-            logger.info(f"Connected to Qdrant at {QDRANT_URL}")
+            _client = QdrantClient(url=os.getenv("QDRANT_URL"), api_key=os.getenv("QDRANT_API_KEY"))
+            logger.info(f"Connected to Qdrant at {os.getenv('QDRANT_URL')}")
         except Exception as e:
             logger.error(f"Failed to connect to Qdrant: {e}")
             raise RuntimeError(
-                f"Cannot connect to Qdrant at {QDRANT_URL}. "
+                f"Cannot connect to Qdrant at {os.getenv('QDRANT_URL')}. "
                 "Make sure Qdrant is running (e.g., via docker-compose up -d)."
             ) from e
     
@@ -41,7 +62,7 @@ def _initialize_rag():
             logger.error(f"Failed to initialize embedder: {e}")
             raise RuntimeError("Failed to initialize text embedder") from e
 
-
+# Search the knowledge base using RAG (Retrieval Augmented Generation)
 def search_kb_rag(query: str, max_results: int = 3) -> Dict[str, Any]:
     """
     Search the knowledge base using RAG (Retrieval Augmented Generation).
@@ -113,7 +134,7 @@ def search_kb_rag(query: str, max_results: int = 3) -> Dict[str, Any]:
             "count": 0
         }
 
-
+# Retrieve a specific knowledge base document by ID
 def get_kb_document(doc_id: int) -> Dict[str, Any]:
     """
     Retrieve a specific knowledge base document by ID.
@@ -150,7 +171,7 @@ def get_kb_document(doc_id: int) -> Dict[str, Any]:
         logger.error(f"Failed to retrieve document {doc_id}: {e}")
         return {"error": f"Failed to retrieve document: {str(e)}"}
 
-
+# Check if the RAG system is properly connected and operational
 def check_rag_connection() -> Dict[str, Any]:
     """
     Check if RAG system is properly connected and operational.

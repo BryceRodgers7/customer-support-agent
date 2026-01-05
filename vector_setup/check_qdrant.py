@@ -1,8 +1,32 @@
 from qdrant_client import QdrantClient
 from fastembed import TextEmbedding
+import os
+
+
+
+# Load secrets from secrets.toml file if environment variables are not set
+if not os.getenv("QDRANT_API_KEY") or not os.getenv("QDRANT_URL"):
+    try:
+        import tomllib  # Python 3.11+
+    except ImportError:
+        import tomli as tomllib  # For Python < 3.11, install via: pip install tomli
+
+    secrets_path = os.path.join(os.path.dirname(__file__), "..", "secrets.toml")
+    with open(secrets_path, "rb") as f:
+        secrets = tomllib.load(f)
+        # Set as environment variables
+        for key, value in secrets.items():
+            os.environ[key] = value
+
+if not os.getenv("QDRANT_API_KEY"):
+    raise RuntimeError("Missing QDRANT_API_KEY env var")
+if not os.getenv("QDRANT_URL"):
+    raise RuntimeError("Missing QDRANT_URL env var")
+
+print(f"QDRANT_URL: {os.getenv('QDRANT_URL')}")
 
 # Initialize client and embedder
-client = QdrantClient(url="http://localhost:6333")
+client = QdrantClient(url=os.getenv("QDRANT_URL"), api_key=os.getenv("QDRANT_API_KEY"))
 embedder = TextEmbedding(model_name="BAAI/bge-small-en-v1.5")
 COLLECTION = "support_kb"
 

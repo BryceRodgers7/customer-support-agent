@@ -1,7 +1,11 @@
+# Environment variables
 .env
+secrets.toml
+
+# Database files
 tickets.sqlite3
 *.db
 # Python bytecode
 **/__pycache__/
 *.py[cod]
-points.txt
+points*.txt

@@ -19,6 +19,11 @@ def chunk_text(
     while start < text_length:
         end = start + chunk_size
         chunk = text[start:end]
+
+        last_period = chunk.rfind(".")
+        if last_period > 0:
+            chunk = chunk[: last_period + 1]
+
         chunks.append(chunk)
 
         if end >= text_length:
